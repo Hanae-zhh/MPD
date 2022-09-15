@@ -52,19 +52,10 @@ import os
 # os.environ["CUDA_VISIBLE_DEVICES"] =  "1,3"
 #os.environ['TFHUB_CACHE_DIR'] = '/home/zhangh/.cache/tfhub_modules'
 os.environ['TFHUB_CACHE_DIR'] = '/home/zhangh/.cache'
+
 class Classifier:
     def __init__(self, args: ClassifierArgs):
-        # check mode
-        # self.methods = {'train': self.train, 
-        #                 'evaluate': self.evaluate,
-        #                 'predict': self.predict, 
-        #                 'attack': self.attack,
-        #                 'augmentation': self.augmentation,
-        #                 'certify': self.certify,
-        #                 'statistics': self.statistics
-        #                 }# 'certify': self.certify}
-        #assert args.mode in self.methods, 'mode {} not found'.format(args.mode)
-
+        
         # for data_reader and processing
         self.data_reader, self.tokenizer, self.data_processor = self.build_data_processor(args)
         #data_reader, tokenizer, data_processor

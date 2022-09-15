@@ -536,9 +536,9 @@ if __name__ == '__main__':
     
     #pwws/pso/ga/'fga'/'textfooler'/'bae'/'deepwordbug'/'textbugger'
   
-    #python test_classifier.py --model_type bert --dataset_name snli
-    #CUDA_VISIBLE_DEVICES=5 python purify.py --mode purify --model_type roberta --dataset_name imdb --attack_method bae --mask_rate 0.7 --purify_num 10
-    #CUDA_VISIBLE_DEVICES=1 python3 purify.py --mode purify --model_type roberta --dataset_name snli --attack_method bae --mask_rate 0.6 --purify_num 10
+    # python test_classifier.py --model_type bert --dataset_name snli
+    # CUDA_VISIBLE_DEVICES=5 python purify.py --mode purify --model_type roberta --dataset_name imdb --attack_method bae --mask_rate 0.7 --purify_num 10
+    # CUDA_VISIBLE_DEVICES=1 python3 purify.py --mode purify --model_type roberta --dataset_name snli --attack_method bae --mask_rate 0.6 --purify_num 10
 
     args = ClassifierArgs()._parse_args()
     #print(args)

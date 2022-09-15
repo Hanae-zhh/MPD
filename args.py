@@ -17,14 +17,9 @@ class ClassifierArgs(ProgramArgs):
         self.seed = None
         # for evaluate and predict, default is 'test', meaning test set
         self.evaluation_data_type = 'test'
-
-        #self.dataset_name = 'agnews'
         self.dataset_name = 'imdb'
-        #self.dataset_dir = '/home/zjiehang/SparseNLP/dataset'
         self.dataset_dir = '/data/ZhanghData/Datasets'
         self.model_type = 'bert'
-        #self.model_name_or_path = '/home/zjiehang/SparseNLP/pretrained/roberta-base-english'
-        #self.model_name_or_path = '/data/ZhanghData/MaskDefense/pretrained/bert-base-uncased'
         self.model_name_or_path = '/data/ZhanghData/Pretrained_Models/bert-base-uncased'
         # for processing data 
         self.max_seq_length = 256 if self.dataset_name == 'imdb' else 128
@@ -41,11 +36,6 @@ class ClassifierArgs(ProgramArgs):
         self.adam_epsilon = 1e-8  # epsilon for Adam optimizer
         self.max_grad_norm = 1.0  # max gradient norm
         self.learning_rate_decay = 0.1  # Proportion of training to perform linear learning rate warmup for,E.g., 0.1 = 10% of training
-
-        # the key to compare when choosing the best modeling to be saved, default is '-loss'
-        # where '+X' means the larger the X is, the better the modeling.
-        # where '-X' means the smaller the X is, the better the modeling.
-        # e.g., when X == '-loss', using loss to compare which epoch is best
         self.compare_key = '+accuracy'
 
         # saving, logging and caching
@@ -72,11 +62,6 @@ class ClassifierArgs(ProgramArgs):
         # for certify on sparse NLP
         self.ceritfy_ensemble = 5000
         self.certify_numbers = 1000 # default is None, meaning all dataset is used to evaluate
-        # whether to add lambda, for sparse NLP, 
-        # pi(x)− Pr([f(ABLATE(x, T)) = i] ∧ [T ∩ (x diff with x')]) <= pi(x')
-        # Pr([f(ABLATE(x, T)) = i] ∧ [T ∩ (x diff with x') != Ø]) = Pr([f(ABLATE(x, T)) = i] | [T ∩ (x diff with x')  != Ø]) * Pr(T ∩ (x diff with x')  != Ø)
-        # where lambda = Pr([f(ABLATE(x, T)) = i] | [T ∩ (x diff with x')  != Ø]) * Pr(T ∩ (x diff with x')  != Ø)
-        # if lambda is False, only use the delta Pr(T ∩ (x diff with x')  != Ø) for certificate robustness 
         self.certify_lambda = True
         # for confidence alpha probability
         self.alpha = 0.05
@@ -202,11 +187,6 @@ class ClassifierArgs(ProgramArgs):
         elif self.training_type == 'advhotflip':
             hyper_parameter_dict['rate'] = self.adv_change_rate
             hyper_parameter_dict['advstep'] = self.adv_steps
-        # elif self.training_type == 'metric' or self.training_type == 'metric_token':
-        #     hyper_parameter_dict['rate'] = self.attack_max_rate_for_training
-        #     hyper_parameter_dict['step'] = self.adv_steps
-        #     hyper_parameter_dict['alpha'] = self.metric_learning_alpha
-        #     hyper_parameter_dict['margin'] = self.metric_learning_margin
         if self.training_type == 'sparse':
             hyper_parameter_dict['rate'] = self.sparse_mask_rate
 

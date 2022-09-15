@@ -47,11 +47,9 @@ from textattack.attack_results import SuccessfulAttackResult, FailedAttackResult
 from utils.public import auto_create
 from utils.certify import predict, lc_bound, population_radius_for_majority, population_radius_for_majority_by_estimating_lambda, population_lambda
 from torch.optim.adamw import AdamW
-
 import logging
 import os
-# os.environ["CUDA_VISIBLE_DEVICES"] =  "1,3"
-#os.environ['TFHUB_CACHE_DIR'] = '/home/zhangh/.cache/tfhub_modules'
+
 os.environ['TFHUB_CACHE_DIR'] = '/home/zhangh/.cache'
 class Classifier:
     def __init__(self, args: ClassifierArgs):
@@ -94,8 +92,6 @@ class Classifier:
         return optimizer
 
     def build_model(self, args: ClassifierArgs) -> nn.Module:
-        # config_class: PreTrainedConfig
-        # model_class: PreTrainedModel
         config_class, model_class, _ = PRETRAINED_MODEL_TYPE.MODEL_CLASSES[args.model_type]
         config = config_class.from_pretrained(
             args.model_name_or_path,
@@ -112,12 +108,8 @@ class Classifier:
 
     def build_data_processor(self, args: ClassifierArgs, **kwargs) -> List[Union[DataReader, PreTrainedTokenizer, DataProcessor]]:
         data_reader = DATASET_TYPE.DATA_READER[args.dataset_name]()
-        #for example data_reader = BinarySentimentAnalysisDataReader()
         _, _, tokenizer_class = PRETRAINED_MODEL_TYPE.MODEL_CLASSES[args.model_type]
-        #print("to")
-        #for example, with model_type=bert,return (BertConfig, BertForSequenceClassification, BertTokenizer)
         print(f" **********args.model_name_or_path: { args.model_name_or_path}")
-   
         tokenizer = tokenizer_class.from_pretrained(
             args.model_name_or_path,
             do_lower_case=args.do_lower_case
@@ -134,8 +126,6 @@ class Classifier:
 
     def build_data_loader(self, args: ClassifierArgs, data_type: str, use_tokenizer: bool = True, **kwargs) -> List[Union[Dataset, DataLoader]]:
         
-        # for some training type, when training, the inputs type is Inputstance
-        #print(f"use_tokenizer:{use_tokenizer}")
         if data_type == 'train' and args.training_type in self.type_accept_instance_as_input:
             use_tokenizer = False
             #print(f"use_tokenizer in of :{use_tokenizer}")
@@ -143,12 +133,7 @@ class Classifier:
         file_name = data_type
         if file_name == 'train' and args.file_name is not None:
             file_name = args.file_name
-        #print(f"file_name:{file_name}") #train
         name = '{}_max{}{}'.format(file_name, args.max_seq_length, '_tokenizer' if use_tokenizer else '')
-        #print(f"name:{name}")# train_max256_tokenizer
-        # print(f"use_tokenizer:{use_tokenizer}")
-        # print(f"file_name:{file_name}")
-        # print(f"name:{name}")
         dataset = auto_create(name,
                             lambda: self.data_processor.read_from_file(args.dataset_dir, file_name, tokenizer=use_tokenizer),
                             #args.dataset_dir = /data/ZhanghData/MaskDefense/dataset/[dataset]
@@ -228,8 +213,7 @@ class Classifier:
         return metric
     
     def attack(self, args: ClassifierArgs, **kwargs):
-        # self.evaluate(args, is_training=False)
-        # self.evaluate(args, is_training=False)
+
         self.loading_model_from_file(args.saving_dir, args.build_saving_file_name(description='best'))
         self.model.eval()
         print(f'************Model loaded!')
@@ -240,11 +224,6 @@ class Classifier:
         print(f"***********Total instances: {len(test_instances)}")
         print(f'***********Data loaded!')
 
-        # print(f'************Type of test instance: {type(test_instances)}')
-        # print(f'{type(dataset)}')
-        # print(f"test_instance 1 :{test_instances[1]}")
-        # print(f"len of test instance:{len(test_instances)}")
-        
         #build attacker
         attacker = self.build_attacker(args)
 
@@ -289,7 +268,6 @@ if __name__ == '__main__':
     
     #pwws/pso/ga/'fga'/'textfooler'/'bae'/'deepwordbug'/'textbugger'
   
-    #CUDA_VISIBLE_DEVICES=1 python test_classifier.py --model_type bert --dataset_name snli
     #CUDA_VISIBLE_DEVICES=3 python attack.py --mode attack --model_type bert --dataset_name snli --attack_method bae 
     args = ClassifierArgs()._parse_args()
     #print(args)
@@ -302,21 +280,14 @@ if __name__ == '__main__':
     elif args.model_type =='roberta':
             print("******here******")
             if args.dataset_name == 'snli':
-                #args.model_name_or_path = '/data/ZhanghData/Pretrained_Models/roberta-large-snli'
                 args.model_name_or_path = '/data/ZhanghData/Pretrained_Models/nli-MiniLM2-L6-H768'
             else:
                 args.model_name_or_path = '/data/ZhanghData/Pretrained_Models/roberta-base'
-        #args.model_name_or_path = '/data/ZhanghData/Pretrained_Models/roberta-base'
-    #args.max_seq_length = 256 if args.dataset_name in ['imdb','snli'] else 128
     args.max_seq_length = 256 if args.dataset_name in ['imdb'] else 128
     if args.dataset_name in ['agnews', 'snli']:
         args.keep_sentiment_word = False
     #args.batch_size = 16 if args.dataset_name in ['imdb', 'snli'] else 32  # batch size
     if args.dataset_name in ['imdb'] :
-        # if args.model_type =='roberta':
-        #     args.batch_size = 8
-        # else:
-        #     args.batch_size = 16 
         args.batch_size = 16
     elif args.dataset_name in ['snli']:
         if args.model_type =='roberta':
@@ -325,8 +296,6 @@ if __name__ == '__main__':
                 args.batch_size = 32
     else:
         args.batch_size = 32 
-
-    
 
     #build logging
     # including check logging path, and set logging config
